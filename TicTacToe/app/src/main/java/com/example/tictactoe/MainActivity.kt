@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                    Text(text = "Hello Alla there", modifier = Modifier.background(Color.Yellow))
+                    Text(text = "test")
                 }
             }
         }
