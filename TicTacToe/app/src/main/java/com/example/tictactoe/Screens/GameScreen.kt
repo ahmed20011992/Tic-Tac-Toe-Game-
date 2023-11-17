@@ -92,7 +92,7 @@ fun GameScreen(navController: NavController = rememberNavController()) {
                 fontStyle = FontStyle.Italic
                 )
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {  },
                 shape = RoundedCornerShape(5.dp),
                 elevation = ButtonDefaults.elevatedButtonElevation(),
                 colors = ButtonDefaults.buttonColors(
