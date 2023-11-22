@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -55,16 +57,16 @@ fun GameScreen(navController: NavController = rememberNavController()) {
 
         ) {
             Text(text = "Player X", fontSize = 16.sp)
-            Text(text = "Drow", fontSize = 16.sp)
+
             Text(text = "Player O", fontSize = 16.sp)
 
         }
        Text(
-           text = "Tic Tac Toe",
-           fontSize = 50.sp,
+           text = "click your winning!",
+           fontSize = 45.sp,
            fontWeight = FontWeight.Bold,
            fontFamily = FontFamily.Cursive,
-           color = Color.DarkGray,
+           color = Color.Black,
            modifier = Modifier.graphicsLayer {  }
 
        )
@@ -74,13 +76,22 @@ fun GameScreen(navController: NavController = rememberNavController()) {
                 .aspectRatio(1f)
                 .shadow(
                     elevation = 10.dp,
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+
                 )
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.LightGray),
             contentAlignment = Alignment.Center
 
         ){
+            LazyVerticalGrid(columns = GridCells.Fixed(3),
+                ){
+                items(9){
+                    squareView()
+                }
+
+
+            }
 
         }
         Row (modifier = Modifier.fillMaxWidth(),
@@ -107,4 +118,19 @@ fun GameScreen(navController: NavController = rememberNavController()) {
 
         }
     }
+}
+
+@Composable
+fun squareView(){
+    Button(onClick = { },
+        modifier = Modifier.aspectRatio(1f),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+        shape = RectangleShape
+    
+    
+    ) {
+        Text(text = "click")
+        
+    }
+
 }
