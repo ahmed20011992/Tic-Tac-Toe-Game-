@@ -28,6 +28,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+
             val navController = rememberNavController()
             TicTacToeTheme {
                 val viewModel = viewModel<MainViewModel>()
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(navController = navController, startDestination = Screen.Main.route) {
+                    NavHost(navController = navController, startDestination = Screen.Lobby.route) {
                         composable(route = Screen.Main.route) {
                             MainScreen(navController = navController,mainViewModel = viewModel())
                         }

@@ -18,6 +18,7 @@ class MainViewModel : ViewModel(){
     fun changeBackGroundColr(){
        backgroundColor= Color.White
     }
+
     fun joinLobby(player: Player){
         viewModelScope.launch {
             try {

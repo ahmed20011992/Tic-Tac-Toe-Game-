@@ -36,6 +36,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.tictactoe.Viewmodel.GameViewModel
 import com.example.tictactoe.Viewmodel.MainViewModel
 import okio.blackholeSink
 import org.w3c.dom.Text
@@ -44,8 +45,8 @@ import org.w3c.dom.Text
 
 
 @Composable
-fun GameScreen(navController: NavController = rememberNavController()) {
-    val viewModel: MainViewModel = viewModel()
+fun GameScreen(viewModel: MainViewModel = viewModel(),navController: NavController = rememberNavController()) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,7 +129,8 @@ fun GameScreen(navController: NavController = rememberNavController()) {
 
 @Composable
 fun squareView(){
-    val viewModel: MainViewModel = viewModel()
+     val viewModel: MainViewModel = viewModel()
+   //val viewModel : GameViewModel = viewModel()
     Button(
         onClick = { viewModel.changeBackGroundColr()},
         modifier = Modifier.aspectRatio(1f),
@@ -143,3 +145,6 @@ fun squareView(){
 
 
 }
+
+
+
