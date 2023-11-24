@@ -40,7 +40,7 @@ fun MainScreen(navController: NavController = rememberNavController(),mainViewMo
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
             mainViewModel.joinLobby(Player(UUID.randomUUID().toString(),name))
-            navController.navigate(Screen.Game.route)
+            navController.navigate(Screen.Lobby.route)
         }) {
             Text(text = "Start Game")
         }

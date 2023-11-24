@@ -20,14 +20,17 @@ import com.example.tictactoe.Screens.GameScreen
 import com.example.tictactoe.Screens.LobbyScreen
 import com.example.tictactoe.Screens.MainScreen
 import com.example.tictactoe.Screens.Screen
+import com.example.tictactoe.Viewmodel.MainViewModel
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
             TicTacToeTheme {
+                val viewModel = viewModel<MainViewModel>()
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
