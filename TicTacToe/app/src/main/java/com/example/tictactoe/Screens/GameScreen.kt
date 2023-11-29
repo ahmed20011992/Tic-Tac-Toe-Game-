@@ -45,7 +45,7 @@ import org.w3c.dom.Text
 
 
 @Composable
-fun GameScreen(viewModel: MainViewModel = viewModel(),navController: NavController = rememberNavController()) {
+fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavController ) {
 
     Column(
         modifier = Modifier
@@ -94,7 +94,7 @@ fun GameScreen(viewModel: MainViewModel = viewModel(),navController: NavControll
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ){
                 items(9){
-                    squareView()
+                    squareView(viewModel)
                 }
 
 
@@ -128,9 +128,7 @@ fun GameScreen(viewModel: MainViewModel = viewModel(),navController: NavControll
 }
 
 @Composable
-fun squareView(){
-     val viewModel: MainViewModel = viewModel()
-   //val viewModel : GameViewModel = viewModel()
+fun squareView(viewModel: GameViewModel){
     Button(
         onClick = { viewModel.changeBackGroundColr()},
         modifier = Modifier.aspectRatio(1f),

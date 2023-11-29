@@ -24,7 +24,7 @@ import io.garrit.android.multiplayer.Player
 import java.util.UUID
 
 @Composable
-fun MainScreen(navController: NavController = rememberNavController(),mainViewModel: MainViewModel= viewModel()){
+fun MainScreen(navController: NavController ,mainViewModel: MainViewModel= viewModel()){
     var name by remember {
         mutableStateOf("")
     }

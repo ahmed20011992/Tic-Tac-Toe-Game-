@@ -10,6 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import io.garrit.android.multiplayer.ActionResult
+import io.garrit.android.multiplayer.GameResult
+import io.garrit.android.multiplayer.SupabaseCallback
 import io.garrit.android.multiplayer.SupabaseService
 
 
@@ -20,7 +24,7 @@ class SquareValue(x:Int,y:Int) {
     var y = mutableStateOf(y)
 }
 
-class GameViewModel : ViewModel() {
+class GameViewModel : ViewModel() ,SupabaseCallback {
     // Represents the Tic Tac Toe board
     var board = mutableListOf<SquareValue>()
 
@@ -30,9 +34,12 @@ class GameViewModel : ViewModel() {
 
     // Represents the winner of the game
     var winner by mutableStateOf<Char?>(null)
-
+    var backgroundColor by mutableStateOf(Color.Gray)
+        private set // här bara för att läsa inte ändra på
     // Function to make a move on the board
-
+    fun changeBackGroundColr(){
+        backgroundColor= Color.White
+    }
     init {
         for(y in 0 until 3 ){
             for(x in 0 until 3){
@@ -48,6 +55,27 @@ class GameViewModel : ViewModel() {
         board.clear()
         currentPlayer = 'X'
         winner = null
+    }
+
+    override suspend fun playerReadyHandler() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun releaseTurnHandler() {
+        TODO("Not yet implemented")
+
+    }
+
+    override suspend fun actionHandler(x: Int, y: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun answerHandler(status: ActionResult) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun finishHandler(status: GameResult) {
+        TODO("Not yet implemented")
     }
 }
 
