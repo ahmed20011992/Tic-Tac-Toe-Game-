@@ -9,11 +9,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -23,25 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tictactoe.Viewmodel.GameViewModel
-import com.example.tictactoe.Viewmodel.MainViewModel
-import okio.blackholeSink
-import org.w3c.dom.Text
-
-
+import com.example.tictactoe.Viewmodel.SquareValue
 
 
 @Composable
@@ -93,9 +84,11 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ){
-                items(9){
-                    squareView(viewModel)
+                items(viewModel.board){sq ->
+                    squareView(viewModel = viewModel,  sq)
                 }
+
+
 
 
             }
@@ -128,16 +121,17 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
 }
 
 @Composable
-fun squareView(viewModel: GameViewModel){
+fun squareView(viewModel: GameViewModel, sq: SquareValue){
+
     Button(
-        onClick = { viewModel.changeBackGroundColr()},
+        onClick = { viewModel.sqClicked(sq) },
         modifier = Modifier.aspectRatio(1f),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
         shape = RectangleShape,
 
 
         ) {
-        Text(text = "click")
+        Text(text = sq.value)
         
     }
 
