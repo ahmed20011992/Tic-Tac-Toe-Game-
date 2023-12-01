@@ -32,6 +32,9 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     // Represents the Tic Tac Toe board
     var board = mutableStateListOf<SquareValue>()
 
+    var playerXScore by mutableStateOf(0)
+    var playerOScore by mutableStateOf(0)
+
 
     // Represents the current player ('X' or 'O')
     var currentPlayer by mutableStateOf("X")
@@ -45,7 +48,9 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         backgroundColor= Color.White
     }
     init {
-        SupabaseService.callbackHandler = this
+        SupabaseService.callbackHandler = this// """is assigning the current instance of the GameViewModel class as the
+        // callback handler for the SupabaseServiceis assigning the current instance of the GameViewModel class
+        // as the callback handler for the SupabaseService"""
         for(y in 0 until 3 ){
             for(x in 0 until 3){
                 board.add(SquareValue(x,y))
@@ -54,7 +59,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     }
     fun sqClicked(sq: SquareValue) {
         println("Sq: $sq")
-        if(backgroundColor != Color.White) {
+        if(backgroundColor != Color.White) {/// here it is another way to make the back.. white inted of using view model as lärare done..
             backgroundColor = Color.White
             return
         }
@@ -68,6 +73,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         for(s in board) {
             println(s)
         }
+        checkForWinner()
 }
     // Function to check if there is a winner
     fun checkForWinner() {
@@ -90,6 +96,16 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         // Check diagonals
         if (checkDiagonal() != null) {
             winner = currentPlayer.first()
+            updateScore()
+        }
+
+
+    }
+
+    private fun updateScore() {
+        when (winner) {
+            'X' -> playerXScore++
+            'O' -> playerOScore++
         }
     }
 
@@ -140,6 +156,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     }
 
     override suspend fun answerHandler(status: ActionResult) {
+
 
 
 

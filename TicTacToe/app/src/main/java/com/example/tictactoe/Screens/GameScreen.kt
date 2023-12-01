@@ -45,16 +45,35 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
             .padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
-    ) {
+    ) {   Text(
+        text = "Player X Score: ${viewModel.playerXScore}",
+        fontSize = 18.sp,
+        color = Color.Black,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(8.dp)
+    )
+        Text( text = "Player O Score: ${viewModel.playerOScore}",
+            fontSize = 18.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            Text(text = "Player X", fontSize = 16.sp)
 
-            Text(text = "Player O", fontSize = 16.sp)
+            if (viewModel.winner != null) {
+                Text(
+                    text = "Player ${viewModel.winner} has won!", fontFamily = FontFamily.Cursive,
+                    fontSize = 24.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
 
         }
        Text(
