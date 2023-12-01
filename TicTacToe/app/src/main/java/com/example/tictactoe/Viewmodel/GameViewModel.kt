@@ -29,12 +29,17 @@ data class SquareValue(
 
 
 class GameViewModel : ViewModel(), SupabaseCallback {
-    // Represents the Tic Tac Toe board
+
     var board = mutableStateListOf<SquareValue>()
 
     var playerXScore by mutableStateOf(0)
     var playerOScore by mutableStateOf(0)
 
+    // Callback-funktion för att meddela att ett drag har gjorts
+    var onMoveMade: (() -> Unit)? = null
+
+    var isPlayerXTurn by mutableStateOf(true)
+// Lägg till en ny variabel för att hålla koll på om det är spelare X:s tur
 
     // Represents the current player ('X' or 'O')
     var currentPlayer by mutableStateOf("X")
@@ -66,14 +71,16 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         val newSq = sq.copy(value = currentPlayer)
         val i = sq.y * 3 + sq.x
         viewModelScope.launch {
-            SupabaseService.sendTurn(sq.x, sq.y)
+            SupabaseService.sendTurn(sq.x, sq.y)//?
         }
         board[sq.y * 3 + sq.x] = newSq
         println("board: $board")
         for(s in board) {
             println(s)
         }
+        isPlayerXTurn = !isPlayerXTurn//?
         checkForWinner()
+        onMoveMade?.invoke()// Anropa callback för att meddela att ett drag har gjorts
 }
     // Function to check if there is a winner
     fun checkForWinner() {
@@ -81,6 +88,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         for (i in 0 until 3) {
             if (checkRow(i)) {
                 winner = currentPlayer.first() // The first character of currentPlayer is the winning symbol
+                updateScore()
                 return
             }
         }
@@ -89,6 +97,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         for (i in 0 until 3) {
             if (checkColumn(i)) {
                 winner = currentPlayer.first()
+                updateScore()
                 return
             }
         }

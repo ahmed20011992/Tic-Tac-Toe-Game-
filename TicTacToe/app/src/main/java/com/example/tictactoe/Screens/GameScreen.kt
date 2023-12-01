@@ -49,13 +49,15 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
         text = "Player X Score: ${viewModel.playerXScore}",
         fontSize = 18.sp,
         color = Color.Black,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Bold,  fontFamily = FontFamily.Cursive,
+
         modifier = Modifier.padding(8.dp)
     )
         Text( text = "Player O Score: ${viewModel.playerOScore}",
             fontSize = 18.sp,
             color = Color.Black,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive,
+
             modifier = Modifier.padding(8.dp)
         )
         Row(
@@ -104,7 +106,7 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ){
                 items(viewModel.board){sq ->
-                    squareView(viewModel = viewModel,  sq)
+                    squareView(viewModel = viewModel,  sq,isPlayerXTurn = viewModel.isPlayerXTurn)
                 }
 
 
@@ -140,14 +142,15 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
 }
 
 @Composable
-fun squareView(viewModel: GameViewModel, sq: SquareValue){
+fun squareView(viewModel: GameViewModel, sq: SquareValue, isPlayerXTurn: Boolean){
 
     Button(
-        onClick = { viewModel.sqClicked(sq) },
+        onClick = { viewModel.sqClicked(sq)
+            viewModel.onMoveMade?.invoke()  },// Efter klicket, meddela GameViewModel att ett drag har gjorts
         modifier = Modifier.aspectRatio(1f),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
         shape = RectangleShape,
-
+        enabled = isPlayerXTurn // Här reglerar du klickbarheten baserat på turordningen
 
         ) {
         Text(text = sq.value)
