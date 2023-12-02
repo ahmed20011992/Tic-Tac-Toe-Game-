@@ -17,6 +17,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +41,8 @@ import com.example.tictactoe.Viewmodel.SquareValue
 
 @Composable
 fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavController ) {
+    //var playerXScore: Int by remember { mutableStateOf(0) }
+    //var playerOScore: Int by remember { mutableStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -124,7 +130,7 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
                 fontStyle = FontStyle.Italic
                 )
             Button(
-                onClick = { navController.navigate(Screen.Game.route) },
+                onClick = { navController.navigate(Screen.Lobby.route) },
                 shape = RoundedCornerShape(5.dp),
                 elevation = ButtonDefaults.elevatedButtonElevation(),
                 colors = ButtonDefaults.buttonColors(
@@ -145,8 +151,7 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
 fun squareView(viewModel: GameViewModel, sq: SquareValue, isPlayerXTurn: Boolean){
 
     Button(
-        onClick = { viewModel.sqClicked(sq)
-            viewModel.onMoveMade?.invoke()  },// Efter klicket, meddela GameViewModel att ett drag har gjorts
+        onClick = { viewModel.sqClicked(sq) },// Efter klicket, meddela GameViewModel att ett drag har gjorts
         modifier = Modifier.aspectRatio(1f),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
         shape = RectangleShape,

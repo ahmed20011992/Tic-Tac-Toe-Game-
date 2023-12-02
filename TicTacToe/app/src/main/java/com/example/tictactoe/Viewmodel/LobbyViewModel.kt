@@ -39,4 +39,6 @@ class LobbyViewModel: ViewModel() {
             SupabaseService.declineInvite(game)
         }
     }
+
+
 }

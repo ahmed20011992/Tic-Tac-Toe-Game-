@@ -32,11 +32,15 @@ class GameViewModel : ViewModel(), SupabaseCallback {
 
     var board = mutableStateListOf<SquareValue>()
 
-    var playerXScore by mutableStateOf(0)
-    var playerOScore by mutableStateOf(0)
+    //var playerXScore: Int by remember { mutableStateOf(0) }
+    //var playerOScore: Int by remember { mutableStateOf(0) }
 
+
+    var playerXScore  by mutableStateOf(0) // här jag måste göra dem mutable remember by
+    var playerOScore by mutableStateOf(0)  //
+    var gameIsfinish = false
     // Callback-funktion för att meddela att ett drag har gjorts
-    var onMoveMade: (() -> Unit)? = null
+    ///var onMoveMade: (() -> Unit)? = null
 
     var isPlayerXTurn by mutableStateOf(true)
 // Lägg till en ny variabel för att hålla koll på om det är spelare X:s tur
@@ -71,16 +75,23 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         val newSq = sq.copy(value = currentPlayer)
         val i = sq.y * 3 + sq.x
         viewModelScope.launch {
-            SupabaseService.sendTurn(sq.x, sq.y)//?
+            SupabaseService.sendTurn(sq.x, sq.y)//?// här den sickar den squer som är klicked till andra plyer ,,
+            ///SupabaseService.releaseTurn() ///
         }
         board[sq.y * 3 + sq.x] = newSq
         println("board: $board")
         for(s in board) {
             println(s)
         }
-        isPlayerXTurn = !isPlayerXTurn//?
+       /// / om inte non har vinn jag måse sicka x turn is fules
+        // jag måste bestämma vim har tåg plats first
+        /// i nottun play more bara gå till baka till Lobby screen
+
+
+
+        isPlayerXTurn = !isPlayerXTurn///// den betyder att jag inte current player nu spärra skärmen(inte min tur )
         checkForWinner()
-        onMoveMade?.invoke()// Anropa callback för att meddela att ett drag har gjorts
+        ////Anropa callback för att meddela att ett drag har gjorts
 }
     // Function to check if there is a winner
     fun checkForWinner() {
@@ -112,10 +123,13 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     }
 
     private fun updateScore() {
+
         when (winner) {
             'X' -> playerXScore++
             'O' -> playerOScore++
         }
+        isPlayerXTurn = false // späära
+        gameIsfinish = true //
     }
 
     private fun checkRow(row: Int): Boolean {
@@ -149,19 +163,32 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     }
 
     override suspend fun playerReadyHandler() {
-        TODO("Not yet implemented")
+
+        println("ARE YOU READY!")
+
+        // jag behöver implementera här
     }
 
-    override suspend fun releaseTurnHandler() {
+    override suspend fun releaseTurnHandler() {// den bestämer vem är aktuell player nu
 
         currentPlayer = if (currentPlayer == "X") "O" else "X"
-
+        isPlayerXTurn = true
     }
 
     override suspend fun actionHandler(x: Int, y: Int) {
+        // den betyder ge mig den click som andra spelare har clikat oc den funkar i båda sidor för o och X
+        val sq :SquareValue = SquareValue(x, y, if (currentPlayer == "X") "O" else "X")
+        println("actionHandler $x $y")// här jag printer den andra spelare clikcat
+        board[y * 3 + x] = sq
+        //currentPlayer = "O" // for att shika säkert att den o tur innan check winner
+        currentPlayer = "O"
+        checkForWinner()
+        if ( ! gameIsfinish ){
+            currentPlayer = "X"
+            isPlayerXTurn = true // den gör att skärmen är avspärrat den gör den free av spärriing
+        }
 
-        println("actionHandler $x $y")
-        board[y * 3 + x] = SquareValue(x, y, if (currentPlayer == "X") "O" else "X")
+
     }
 
     override suspend fun answerHandler(status: ActionResult) {
@@ -177,6 +204,8 @@ class GameViewModel : ViewModel(), SupabaseCallback {
             // Add more cases as needed based on your game's logic
         }
     }
+
+
 
 
 
