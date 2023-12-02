@@ -72,4 +72,7 @@ dependencies {
     implementation("io.ktor:ktor-client-okhttp:2.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
+
+
 }

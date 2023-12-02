@@ -1,17 +1,12 @@
 package com.example.tictactoe.Viewmodel
 
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-
-import androidx.compose.runtime.mutableStateOf
-
-
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.garrit.android.multiplayer.ActionResult
 import io.garrit.android.multiplayer.GameResult
@@ -32,15 +27,12 @@ class GameViewModel : ViewModel(), SupabaseCallback {
 
     var board = mutableStateListOf<SquareValue>()
 
-    //var playerXScore: Int by remember { mutableStateOf(0) }
-    //var playerOScore: Int by remember { mutableStateOf(0) }
 
 
     var playerXScore  by mutableStateOf(0) // här jag måste göra dem mutable remember by
     var playerOScore by mutableStateOf(0)  //
     var gameIsfinish = false
-    // Callback-funktion för att meddela att ett drag har gjorts
-    ///var onMoveMade: (() -> Unit)? = null
+
 
     var isPlayerXTurn by mutableStateOf(true)
 // Lägg till en ny variabel för att hålla koll på om det är spelare X:s tur
@@ -49,7 +41,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     var currentPlayer by mutableStateOf("X")
 
     // Represents the winner of the game
-    var winner by mutableStateOf<Char?>(null)
+    var winner by mutableStateOf<Char?>(null)//?
     var backgroundColor by mutableStateOf(Color.Gray)
         private set // här bara för att läsa inte ändra på
     // Function to make a move on the board
@@ -68,6 +60,10 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     }
     fun sqClicked(sq: SquareValue) {
         println("Sq: $sq")
+        if (board[sq.y * 3 + sq.x].value.isNotBlank()) {
+
+            return
+        }
         if(backgroundColor != Color.White) {/// here it is another way to make the back.. white inted of using view model as lärare done..
             backgroundColor = Color.White
             return
@@ -76,7 +72,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         val i = sq.y * 3 + sq.x
         viewModelScope.launch {
             SupabaseService.sendTurn(sq.x, sq.y)//?// här den sickar den squer som är klicked till andra plyer ,,
-            ///SupabaseService.releaseTurn() ///
+            ////SupabaseService.releaseTurn() ///
         }
         board[sq.y * 3 + sq.x] = newSq
         println("board: $board")
@@ -120,14 +116,17 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         }
 
 
+
+
     }
 
     private fun updateScore() {
 
         when (winner) {
-            'X' -> playerXScore++
-            'O' -> playerOScore++
+            'X' -> {playerXScore++}
+            'O' -> {playerOScore++}
         }
+
         isPlayerXTurn = false // späära
         gameIsfinish = true //
     }
@@ -171,7 +170,7 @@ class GameViewModel : ViewModel(), SupabaseCallback {
 
     override suspend fun releaseTurnHandler() {// den bestämer vem är aktuell player nu
 
-        currentPlayer = if (currentPlayer == "X") "O" else "X"
+        currentPlayer = if (currentPlayer == "X") "O" else "X"//
         isPlayerXTurn = true
     }
 
@@ -184,8 +183,9 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         currentPlayer = "O"
         checkForWinner()
         if ( ! gameIsfinish ){
-            currentPlayer = "X"
-            isPlayerXTurn = true // den gör att skärmen är avspärrat den gör den free av spärriing
+             currentPlayer = "X"
+            isPlayerXTurn = true // den gör att skärmen är inte spärrat , den gör den free av spärriing
+
         }
 
 

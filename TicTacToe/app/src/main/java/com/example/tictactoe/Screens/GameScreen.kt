@@ -17,10 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,11 +32,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.tictactoe.Viewmodel.GameViewModel
+import com.example.tictactoe.Viewmodel.LobbyViewModel
 import com.example.tictactoe.Viewmodel.SquareValue
+import io.garrit.android.multiplayer.SupabaseService.player
 
 
 @Composable
-fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavController ) {
+fun GameScreen(name11: LobbyViewModel =viewModel(), viewModel: GameViewModel = viewModel(), navController: NavController) {
     //var playerXScore: Int by remember { mutableStateOf(0) }
     //var playerOScore: Int by remember { mutableStateOf(0) }
 
@@ -75,7 +73,8 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
 
             if (viewModel.winner != null) {
                 Text(
-                    text = "Player ${viewModel.winner} has won!", fontFamily = FontFamily.Cursive,
+                   // text = "Player ${viewModel.winner} has won!", fontFamily = FontFamily.Cursive,
+                    text = "Player ${player?.name} has won!", fontFamily = FontFamily.Cursive,
                     fontSize = 24.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -125,9 +124,9 @@ fun GameScreen(viewModel : GameViewModel = viewModel(),navController: NavControl
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
             ){
-            Text(text = "Player  'O' turn",
-                fontSize = 25.sp,
-                fontStyle = FontStyle.Italic
+            Text(fontSize = 25.sp,
+                fontStyle = FontStyle.Italic,
+                text = "It's ${player?.name}s turn"
                 )
             Button(
                 onClick = { navController.navigate(Screen.Lobby.route) },
