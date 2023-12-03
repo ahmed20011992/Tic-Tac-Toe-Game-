@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import LobbyScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tictactoe.Screens.GameScreen
-import com.example.tictactoe.Screens.LobbyScreen
+
 import com.example.tictactoe.Screens.MainScreen
 import com.example.tictactoe.Screens.Screen
 import com.example.tictactoe.ui.theme.TicTacToeTheme

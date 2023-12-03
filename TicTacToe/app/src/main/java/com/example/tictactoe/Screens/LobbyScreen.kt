@@ -1,5 +1,5 @@
-package com.example.tictactoe.Screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,15 +8,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.tictactoe.R
+import com.example.tictactoe.Screens.Screen
 import com.example.tictactoe.Viewmodel.LobbyViewModel
 import io.garrit.android.multiplayer.Game
 import io.garrit.android.multiplayer.Player
@@ -26,7 +32,7 @@ import io.garrit.android.multiplayer.Player
 fun LobbyScreen(navController: NavController, lobbyViewModel: LobbyViewModel = viewModel()) {
     val serverState = lobbyViewModel.server.collectAsState().value
 
-    if(lobbyViewModel.server.collectAsState().value.toString()=="GAME") {
+    if (lobbyViewModel.server.collectAsState().value.toString() == "GAME") {
         navController.navigate(Screen.Game.route)
     }
 
@@ -38,12 +44,22 @@ fun LobbyScreen(navController: NavController, lobbyViewModel: LobbyViewModel = v
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray),
+            .background(Color.Yellow),
         topBar = { LobbyTopAppBar() },
         bottomBar = { LobbyBottomAppBar() },
-        content = { padd -> LobbyContent(lobbyViewModel, padd) }
-    )
+        content = {
+                padd ->
+            Box {
+                Image(
+                    painter = painterResource(id = R.drawable.tic_back_ground),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
 
+            }
+
+            LobbyContent(lobbyViewModel, padd) }
+    )
 
 }
 
@@ -51,7 +67,10 @@ fun LobbyScreen(navController: NavController, lobbyViewModel: LobbyViewModel = v
 @Composable
 fun LobbyTopAppBar() {
     TopAppBar(
-        title = { Text(text = "Tic Tac Toe") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray),
+        title = { Text(text = "Tic Tac Toe", fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = {}) {
                 Icon(Icons.Default.Menu, contentDescription = null)
@@ -67,8 +86,10 @@ fun LobbyTopAppBar() {
 
 @Composable
 fun LobbyBottomAppBar() {
-    BottomAppBar {
-        // Bottom app bar content
+    BottomAppBar(modifier = Modifier
+        .fillMaxWidth()
+        .background(Color.LightGray)) {
+
     }
 }
 
@@ -80,43 +101,71 @@ fun LobbyContent(lobbyViewModel: LobbyViewModel, padd: PaddingValues) {
             .padding(padd),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
+        
+        
     ) {
+
         LazyColumn {
             items(lobbyViewModel.players) { player ->
                 LobbyView(player = player, lobbyViewModel = lobbyViewModel)
             }
         }
+
+
+
     }
 }
 
 @Composable
 fun LobbyView(player: Player, lobbyViewModel: LobbyViewModel) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp)
-            .clickable { lobbyViewModel.sendInvite(player) }
-            .background(Color.Yellow)
+    Card(
+        modifier = Modifier.run {
+            fillMaxWidth()
+                .height(80.dp)
+                .clickable { lobbyViewModel.sendInvite(player) }
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.primary)
+                .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+        },
+        shape = MaterialTheme.shapes.medium
     ) {
-        Text(text = player.name)
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = player.name,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 }
+
+
+
 
 @Composable
 fun InviteReq(lobbyViewModel: LobbyViewModel, game: Game) {
     AlertDialog(
         onDismissRequest = { /* TODO */ },
-        text = { Text(text = "Someone has invited you!") },
+        text = { Text(text = "Someone has invited you!", fontWeight = FontWeight.Bold) },
         confirmButton = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(onClick = { lobbyViewModel.accept(game) }) {
-                    Text(text = "Accept")
+                    Text(text = "Accept", fontWeight = FontWeight.Bold)
                 }
                 Button(onClick = { lobbyViewModel.diclin(game) }) {
-                    Text(text = "Decline")
+                    Text(text = "Decline", fontWeight = FontWeight.Bold)
                 }
             }
         }
