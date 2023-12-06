@@ -34,14 +34,14 @@ import androidx.navigation.NavController
 import com.example.tictactoe.Viewmodel.GameViewModel
 import com.example.tictactoe.Viewmodel.LobbyViewModel
 import com.example.tictactoe.Viewmodel.SquareValue
-import io.garrit.android.multiplayer.SupabaseService.player
 
 
 @Composable
 fun GameScreen(name11: LobbyViewModel =viewModel(), viewModel: GameViewModel = viewModel(), navController: NavController) {
     //var playerXScore: Int by remember { mutableStateOf(0) }
     //var playerOScore: Int by remember { mutableStateOf(0) }
-
+    val playerTurn = if(viewModel.isPlayerXTurn.value) viewModel.me else viewModel.oponent
+     // den här kan ändras när det händer en recompose playerTurn ta en ny value varje gong
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,7 +74,7 @@ fun GameScreen(name11: LobbyViewModel =viewModel(), viewModel: GameViewModel = v
             if (viewModel.winner != null) {
                 Text(
                    // text = "Player ${viewModel.winner} has won!", fontFamily = FontFamily.Cursive,
-                    text = "Player ${player?.name} has won!", fontFamily = FontFamily.Cursive,
+                    text = "Player ${viewModel.winner!!.name} has won!", fontFamily = FontFamily.Cursive,
                     fontSize = 24.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -111,7 +111,7 @@ fun GameScreen(name11: LobbyViewModel =viewModel(), viewModel: GameViewModel = v
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ){
                 items(viewModel.board){sq ->
-                    squareView(viewModel = viewModel,  sq,isPlayerXTurn = viewModel.isPlayerXTurn)
+                    squareView(viewModel = viewModel,  sq,isPlayerXTurn = viewModel.isPlayerXTurn.value)
                 }
 
 
@@ -126,10 +126,12 @@ fun GameScreen(name11: LobbyViewModel =viewModel(), viewModel: GameViewModel = v
             ){
             Text(fontSize = 25.sp,
                 fontStyle = FontStyle.Italic,
-                text = "It's ${player?.name}s turn"
+                text = "It's ${playerTurn!!.name}'s turn"
                 )
             Button(
-                onClick = { navController.navigate(Screen.Lobby.route) },
+                onClick = { viewModel.resetGame()
+                    viewModel.oponentReset()
+                          },
                 shape = RoundedCornerShape(5.dp),
                 elevation = ButtonDefaults.elevatedButtonElevation(),
                 colors = ButtonDefaults.buttonColors(
@@ -139,6 +141,7 @@ fun GameScreen(name11: LobbyViewModel =viewModel(), viewModel: GameViewModel = v
 
             ) {
                 Text(text = "Playe More")
+
 
             }
 
