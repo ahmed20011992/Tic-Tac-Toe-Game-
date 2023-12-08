@@ -1,7 +1,6 @@
 package com.example.tictactoe.Viewmodel
 
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +13,7 @@ import io.garrit.android.multiplayer.GameResult
 import io.garrit.android.multiplayer.Player
 import io.garrit.android.multiplayer.SupabaseCallback
 import io.garrit.android.multiplayer.SupabaseService
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 
@@ -28,14 +28,17 @@ data class SquareValue(
 class GameViewModel : ViewModel(), SupabaseCallback {
 
     var board = mutableStateListOf<SquareValue>()
-    var theWinner : MutableState<Boolean> = mutableStateOf(false)
-
+    //var theWinner : MutableState<Boolean> = mutableStateOf(false)
+    var theWinner = MutableStateFlow (false)
 
     val me = SupabaseService.player
-    val oponent = if(SupabaseService.currentGame!!.player1.id!=me!!.id) SupabaseService.currentGame!!.player1 else me
+    val oponent = if(SupabaseService.currentGame!!.player1.id != me!!.id) SupabaseService.currentGame!!.player1 else SupabaseService.currentGame!!.player2
     var playerXScore  by mutableStateOf(0) // här jag måste göra dem mutable remember by
     var playerOScore by mutableStateOf(0)  //
     var gameIsfinish = false
+    var isReady = mutableStateOf(false)
+    var isOpReady = mutableStateOf(false)
+
 
 
     var isPlayerXTurn = mutableStateOf(false)
@@ -52,66 +55,85 @@ class GameViewModel : ViewModel(), SupabaseCallback {
     fun changeBackGroundColr(){
         backgroundColor= Color.White
     }
+    fun xxx(){
+        viewModelScope.launch { SupabaseService.leaveGame() }
+    }
+
     init {
         SupabaseService.callbackHandler = this// """is assigning the current instance of the GameViewModel class as the
         // callback handler for the SupabaseServiceis assigning the current instance of the GameViewModel class
         // as the callback handler for the SupabaseService"""
         // häre jag kan impplementera den här som hjälper vem kan cklika först .......
         /////isPlayerXTurn = true
+
+
         for(y in 0 until 3 ){
             for(x in 0 until 3){
                 board.add(SquareValue(x,y))
             }
         }
-        if(SupabaseService.currentGame?.player1!!.id!=SupabaseService.player!!.id){
-            viewModelScope.launch {
-                SupabaseService.releaseTurn()
-            }
-        }
     }
     fun sqClicked(sq: SquareValue) {
         println("Sq: $sq")
-        if (board[sq.y * 3 + sq.x].value.isNotBlank()) {
-
-            return
-        }
-        if(backgroundColor != Color.White) {/// here it is another way to make the back.. white inted of using view model as lärare done..
-            backgroundColor = Color.White
-            return
-        }
-        val newSq = sq.copy(value = currentPlayer)
-        val i = sq.y * 3 + sq.x
-        viewModelScope.launch {
-            SupabaseService.sendTurn(sq.x, sq.y)//?// här den sickar den squer som är klicked till andra plyer ,,
-            ////SupabaseService.releaseTurn() ///
-        }
-        board[sq.y * 3 + sq.x] = newSq
-        println("board: $board")
-        for(s in board) {
-            println(s)
-        }
-       /// / om inte non har vinn jag måse sicka x turn is fules
-        // jag måste bestämma vim har tåg plats first
-        /// i nottun play more bara gå till baka till Lobby screen
+        println("Is player turn: ${isPlayerXTurn.value} $gameIsfinish")
+        if ( isOpReady.value && isOpReady.value&&isPlayerXTurn.value) {
 
 
-
-        isPlayerXTurn.value = false///// den betyder att jag inte current player nu spärra skärmen(inte min tur )
-        checkForWinner()
-        if(winner!=null){
-            winner=me
-            gameIsfinish=true
-            viewModelScope.launch {
-                SupabaseService.gameFinish(GameResult.LOSE)
+            if (gameIsfinish == true) {
+                return
             }
+            println("Is player turn 1")
+            if (board[sq.y * 3 + sq.x].value.isNotBlank()) {
+
+                return
+            }
+            println("Is player turn 2")
+
+            if (backgroundColor != Color.White) {/// here it is another way to make the back.. white inted of using view model.
+                backgroundColor = Color.White
+                return
+            }
+            println("Is player turn 3")
+            val newSq = sq.copy(value = currentPlayer)
+            val i = sq.y * 3 + sq.x
+            println("Is player turn 4")
+            viewModelScope.launch {
+                SupabaseService.sendTurn(
+                    sq.x,
+                    sq.y
+                )//// här den sickar den squer som är klicked till andra plyer ,,
+                ////SupabaseService.releaseTurn() ///
+            }
+            println("Is player turn 5")
+            board[sq.y * 3 + sq.x] = newSq
+            println("board: $board")
+            for (s in board) {
+                println(s)
+            }
+            println("Is player turn 6")
+            /// / om inte non har vinn jag måse sicka x turn is fules
+            // jag måste bestämma vim har tåg plats first
+            /// i nottun play more bara gå till baka till Lobby screen
+
+
+            isPlayerXTurn.value =
+                false///// den betyder att jag inte current player nu spärra skärmen(inte min tur )
+            checkForWinner()
+
+
+                //resetGame()
+
+
+            println("Is player turn 7")
+
+            viewModelScope.launch {
+                SupabaseService.releaseTurn()
+            }
+            println("Is player turn 8")
         }
 
-        viewModelScope.launch {
-            SupabaseService.releaseTurn()
-        }
-
-        ////Anropa callback för att meddela att ett drag har gjorts
-}
+          ////Anropa callback för att meddela att ett drag har gjorts
+    }
     // Function to check if there is a winner
     fun checkForWinner() {
         // Check rows
@@ -119,6 +141,10 @@ class GameViewModel : ViewModel(), SupabaseCallback {
             if (checkRow(i)) {
                 winner = me //currentPlayer.first() // The first character of currentPlayer is the winning symbol
                 updateScore()
+                gameIsfinish = true
+                viewModelScope.launch {
+                    SupabaseService.gameFinish(GameResult.LOSE)
+                }
                 return
             }
         }
@@ -127,25 +153,34 @@ class GameViewModel : ViewModel(), SupabaseCallback {
             if (checkColumn(i)) {
                 winner = me //currentPlayer.first()
                 updateScore()
+                gameIsfinish = true
+                viewModelScope.launch {
+                    SupabaseService.gameFinish(GameResult.LOSE)
+                }
                 return
             }
         }
         // Check diagonals
-        if (checkDiagonal() != null) {
+        if (checkDiagonal()) {
             winner = me//currentPlayer.first()
             updateScore()
+            gameIsfinish = true
+            viewModelScope.launch {
+                SupabaseService.gameFinish(GameResult.LOSE)
+            }
         }
     }
 
     private fun updateScore() {
+        println("Update score")
 
         when (winner) {
             me -> {playerXScore++}
             oponent -> {playerOScore++}
         }
 
-        isPlayerXTurn.value = false //
-        gameIsfinish = true //
+       // isPlayerXTurn.value = false //
+        //gameIsfinish = true //
     }
 
     private fun checkRow(row: Int): Boolean {
@@ -159,20 +194,32 @@ class GameViewModel : ViewModel(), SupabaseCallback {
         return symbols.all { it == currentPlayer }
     }
 
-    private fun checkDiagonal(): Boolean? {
+    private fun checkDiagonal(): Boolean {
         val leftToRight = (0 until 3).map { board[it * 3 + it].value }
         val rightToLeft = (0 until 3).map { board[it * 3 + (2 - it)].value }
 
         return when {
             leftToRight.all { it == currentPlayer } -> true
             rightToLeft.all { it == currentPlayer } -> true
-            else -> null
+            else -> {return false}
+        }
+    }
+    fun sendReady(){
+        isReady.value = true // DEN SIOM GÖR
+        viewModelScope.launch {
+            println("Sending player ready")
+            SupabaseService.playerReady()//// DEN SKICKAR  BARA INTE GÖR NÅT READY
+        }
+        if(SupabaseService.player!!.id != SupabaseService.currentGame!!.player1!!.id){
+            viewModelScope.launch {
+                SupabaseService.releaseTurn()
+            }
         }
     }
 
     fun oponentReset(){
         viewModelScope.launch {
-            SupabaseService.sendAnswer(ActionResult.HIT)
+            //SupabaseService.sendAnswer(ActionResult.HIT)
         }
     }
     // Function to reset the game
@@ -184,26 +231,33 @@ class GameViewModel : ViewModel(), SupabaseCallback {
                 board.add(SquareValue(x,y))
             }
         }
-        if(SupabaseService.currentGame?.player1!!.id==SupabaseService.player!!.id){
-            isPlayerXTurn.value=true
+        if(SupabaseService.currentGame?.player1!!.id!=SupabaseService.player!!.id){
+            viewModelScope.launch {
+                SupabaseService.releaseTurn()
+            }
         }
         winner = null
     }
 
     override suspend fun playerReadyHandler() {
+  /// den hör fund´kionenen måste anråpas when other device payer is calld
+        //isPlayerXTurn.value = SupabaseService.player?.id == SupabaseService.currentGame?.player1?.id
+        isOpReady.value=true
+        //isOpReady.value= true
 
-        println("ARE YOU READY!")
-
-        // jag behöver implementera här
+        println("Player Ready Handler ${isPlayerXTurn.value}")
     }
 
     override suspend fun releaseTurnHandler() {// den bestämer vem är aktuell player nu
         isPlayerXTurn.value= true
+        println("Release turn handler")
         //currentPlayer = if (isPlayerXTurn) "O" else "X"//
     }
 
     override suspend fun actionHandler(x: Int, y: Int) {
+        println("Action handler")
         // den betyder ge mig den click som andra spelare har clikat oc den funkar i båda sidor för o och X
+        if (gameIsfinish){return}
         val sq :SquareValue = SquareValue(x, y, oponentPlayer)
         println("actionHandler $x $y")// här jag printer den andra spelare clikcat
         board[y * 3 + x] = sq
@@ -219,31 +273,32 @@ class GameViewModel : ViewModel(), SupabaseCallback {
 
     override suspend fun answerHandler(status: ActionResult) {
         if(status==ActionResult.HIT){
-            resetGame()
+           // resetGame()
         }
     }
 
     override suspend fun finishHandler(status: GameResult) {
-     when(status){
-         GameResult.WIN-> {
-             theWinner.value= true
-             winner=me
-         }
-         GameResult.LOSE->{
-             theWinner.value= true
-             winner=oponent
-         }
+        gameIsfinish=true
+         when(status) {
 
-         else ->{
-         theWinner.value=false
+             GameResult.LOSE -> {
+                 theWinner.value = true
+                 winner = oponent
+                 updateScore()
+             }
+
+
+             else -> {}
          }
-     }
+        println("Game Finish ${winner}")
+
+        //updateScore()
 
             // Add more cases as needed based on your game's logic
         }
     //isWin.value = true
     }
-
+////
 
 
 
